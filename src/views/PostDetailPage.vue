@@ -82,6 +82,7 @@ async function loadPost() {
   try {
     const res = await getPostDetail(route.params.slug)
     post.value = res.data.data
+    document.title = post.value.title + " - " + (site.config.site_name || "Blog")
     const body = post.value.body || ""
     renderedHtml.value = marked.parse(body)
 
