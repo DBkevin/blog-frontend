@@ -10,7 +10,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue"
+import { ref, nextTick, onMounted, onUnmounted } from "vue"
 
 const props = defineProps({ items: { type: Array, default: () => [] } })
 const activeId = ref("")
@@ -25,9 +25,7 @@ onMounted(() => {
   observer = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) activeId.value = e.target.id })
   }, { rootMargin: "-80px 0px -70% 0px" })
-  setTimeout(() => {
-    document.querySelectorAll(".article-body h2, .article-body h3").forEach(el => observer.observe(el))
-  }, 200)
+  nextTick(() => { document.querySelectorAll(".article-body h2, .article-body h3").forEach(el => observer.observe(el)) })
 })
 onUnmounted(() => observer?.disconnect())
 </script>

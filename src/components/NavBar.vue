@@ -3,12 +3,14 @@
     <div class="navbar-inner">
       <router-link to="/" class="nav-logo">
         <span class="logo-dot"></span>
-        {{ site.config.site_name || "二丫讲梵" }}
+        {{ site.config.site_name || "Blog" }}
       </router-link>
       <nav class="nav-links">
         <router-link to="/" class="nav-link" exact-active-class="active">首页</router-link>
-        <router-link to="/series/learning-weekly" class="nav-link" active-class="active">学习周刊</router-link>
-        <router-link to="/categories/devops" class="nav-link" active-class="active">运维</router-link>
+        <router-link v-for="item in navItems" :key="item.path"
+          :to="item.path" class="nav-link" active-class="active">
+          {{ item.label }}
+        </router-link>
         <router-link to="/about" class="nav-link" active-class="active">关于</router-link>
       </nav>
       <div class="nav-actions">
@@ -27,8 +29,8 @@
     <Transition name="menu-slide">
       <div v-if="menuOpen" class="mobile-menu" @click="menuOpen = false">
         <router-link to="/" @click="menuOpen=false" class="mobile-link">首页</router-link>
-        <router-link to="/series/learning-weekly" @click="menuOpen=false" class="mobile-link">学习周刊</router-link>
-        <router-link to="/categories/devops" @click="menuOpen=false" class="mobile-link">运维</router-link>
+        <router-link v-for="item in navItems" :key="item.path"
+          :to="item.path" @click="menuOpen=false" class="mobile-link">{{ item.label }}</router-link>
         <router-link to="/about" @click="menuOpen=false" class="mobile-link">关于</router-link>
       </div>
     </Transition>
@@ -36,13 +38,32 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
+import { ref, computed } from "vue"
 import { useThemeStore } from "../stores/theme"
 import { useSiteStore } from "../stores/site"
 defineEmits(["open-search"])
 const theme = useThemeStore()
 const site = useSiteStore()
 const menuOpen = ref(false)
+
+const navItems = computed(() => {
+  const items = []
+  const cats = site.sidebar?.categories || []
+  const series = site.sidebar?.series || []
+  // Add series nav items
+  series.forEach((s) => {
+    items.push({ label: s.name, path: "/series/" + s.slug })
+  })
+  // Add top 5 categories by post count
+  cats
+    .slice()
+    .sort((a, b) => (b.posts_count || 0) - (a.posts_count || 0))
+    .slice(0, 5)
+    .forEach((c) => {
+      items.push({ label: c.name, path: "/categories/" + c.slug })
+    })
+  return items
+})
 </script>
 
 <style scoped>
@@ -65,10 +86,10 @@ const menuOpen = ref(false)
   width: 8px; height: 8px; border-radius: 50%;
   background: var(--primary); display: inline-block;
 }
-.nav-links { display: flex; gap: 4px; flex: 1; }
+.nav-links { display: flex; gap: 4px; flex: 1; overflow-x: auto; scrollbar-width: none; }
 .nav-link {
   position: relative; padding: 8px 16px; font-size: 15px; color: var(--text-secondary);
-  border-radius: var(--radius-sm); transition: all var(--transition);
+  border-radius: var(--radius-sm); transition: all var(--transition); white-space: nowrap;
   &:hover { color: var(--primary); background: var(--bg-secondary); }
   &.active { color: var(--primary); font-weight: 600; }
   &.active::after {
@@ -76,7 +97,7 @@ const menuOpen = ref(false)
     width: 20px; height: 3px; background: var(--primary); border-radius: 2px;
   }
 }
-.nav-actions { display: flex; gap: 4px; }
+.nav-actions { display: flex; gap: 4px; flex-shrink: 0; }
 .icon-btn {
   display: flex; align-items: center; justify-content: center;
   width: 36px; height: 36px; border: none; border-radius: 50%;
@@ -93,13 +114,11 @@ const menuOpen = ref(false)
 .mobile-link {
   display: block; padding: 12px 24px; color: var(--text); font-size: 15px;
   border-left: 3px solid transparent; transition: all var(--transition);
-  &:hover, &.active { color: var(--primary); background: var(--bg-secondary); border-left-color: var(--primary); }
+  &:hover { color: var(--primary); background: var(--bg-secondary); border-left-color: var(--primary); }
 }
-
 .menu-slide-enter-active, .menu-slide-leave-active { transition: all 0.2s ease; }
 .menu-slide-enter-from, .menu-slide-leave-to { opacity: 0; max-height: 0; padding: 0; }
 .menu-slide-enter-to, .menu-slide-leave-from { opacity: 1; max-height: 300px; }
-
 @media (max-width: 960px) {
   .nav-links { display: none; }
   .mobile-menu-btn { display: flex; }

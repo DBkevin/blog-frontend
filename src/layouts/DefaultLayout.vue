@@ -26,5 +26,9 @@ const props = defineProps({ showSidebar: { type: Boolean, default: true } })
 const showSearch = ref(false)
 const site = useSiteStore()
 
-onMounted(() => { site.fetchAll() })
+onMounted(() => {
+  if (Object.keys(site.config).length === 0) {
+    site.fetchAll()
+  }
+})
 </script>

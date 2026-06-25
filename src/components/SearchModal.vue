@@ -15,7 +15,7 @@
 </template>
 
 <script setup>
-import { ref, nextTick } from "vue"
+import { ref, onMounted, onUnmounted } from "vue"
 import { useRouter } from "vue-router"
 import { searchPosts } from "../api"
 
@@ -54,8 +54,14 @@ function highlight(text) {
 
 function go(slug) { router.push("/posts/" + slug); emit("close") }
 
-nextTick(() => inputRef.value?.focus())
-document.addEventListener("keydown", (e) => { if (e.key === "Escape") emit("close") })
+const handleKeydown = (e) => { if (e.key === "Escape") emit("close") }
+onMounted(() => {
+  inputRef.value?.focus()
+  document.addEventListener("keydown", handleKeydown)
+})
+onUnmounted(() => {
+  document.removeEventListener("keydown", handleKeydown)
+})
 </script>
 
 <style scoped>

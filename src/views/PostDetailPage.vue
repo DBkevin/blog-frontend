@@ -60,6 +60,7 @@ import TocSidebar from "../components/TocSidebar.vue"
 import { useSiteStore } from "../stores/site"
 import { getPostDetail, trackVisit } from "../api"
 import { marked } from "marked"
+marked.setOptions({ gfm: true, breaks: true })
 import hljs from "highlight.js"
 import "highlight.js/styles/github.css"
 

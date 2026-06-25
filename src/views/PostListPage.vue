@@ -51,8 +51,8 @@ async function loadMeta() {
   } catch (e) { meta.value = {} }
 }
 
-onMounted(() => { loadMeta(); loadPosts() })
-watch(() => [route.params.slug, route.query.page], () => { loadMeta(); loadPosts() })
+onMounted(async () => { await loadMeta(); loadPosts() })
+watch(() => [route.params.slug, route.query.page], async () => { await loadMeta(); loadPosts() })
 </script>
 
 <style scoped>

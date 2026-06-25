@@ -16,7 +16,7 @@
 <script setup>
 defineProps({ post: { type: Object, required: true } })
 function formatDate(d) { return d ? new Date(d).toISOString().slice(0, 10) : "" }
-function truncate(str, len) { if (!str) return ""; return str.replace(/<[^>]*>/g,"").length > len ? str.slice(0, len) + "..." : str.replace(/<[^>]*>/g,"") }
+function truncate(str, len) { if (!str) return ""; const txt = document.createElement("textarea"); txt.innerHTML = str.replace(/<[^>]*>/g, ""); const decoded = txt.value; return decoded.length > len ? decoded.slice(0, len) + "..." : decoded }
 </script>
 
 <style scoped>
