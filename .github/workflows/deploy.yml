@@ -15,23 +15,12 @@ jobs:
       - run: npm ci
       - run: npm run build
         env:
-          VITE_API_BASE: http://120.25.70.117:40001/api/v1
-      - name: Deploy dist to server
-        uses: appleboy/scp-action@v0.1.7
+          VITE_API_BASE: ${{ vars.VITE_API_BASE || 'http://120.25.70.117:40001/api/v1' }}
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
         with:
-          host: 120.25.70.117
-          username: root
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          source: dist/
-          target: /data/blog/frontend/
-          strip_components: 0
-      - name: Rebuild Docker container
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: 120.25.70.117
-          username: root
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          script: |
-            cd /data/blog
-            docker compose build blog-frontend --no-cache
-            docker compose up -d blog-frontend
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          projectName: blog-frontend
+          directory: dist
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
