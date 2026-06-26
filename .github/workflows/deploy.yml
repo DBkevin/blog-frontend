@@ -3,6 +3,10 @@ name: Deploy Frontend
 on:
   push:
     branches: [main]
+    workflow_dispatch:
+
+env:
+  VITE_API_BASE: ${{ vars.VITE_API_BASE || 'http://120.25.70.117:40001/api/v1' }}
 
 jobs:
   build-and-deploy:
@@ -14,8 +18,6 @@ jobs:
           node-version: 20
       - run: npm ci
       - run: npm run build
-        env:
-          VITE_API_BASE: ${{ vars.VITE_API_BASE || 'http://120.25.70.117:40001/api/v1' }}
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/pages-action@v1
         with:
