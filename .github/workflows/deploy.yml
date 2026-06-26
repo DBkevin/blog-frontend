@@ -19,16 +19,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - name: Deploy to Cloudflare Pages
-        run: |
-          echo "::group::Install wrangler"
-          npm install -g wrangler
-          echo "::endgroup::"
-          echo "::group::Run wrangler whoami"
-          wrangler whoami 2>&1
-          echo "::endgroup::"
-          echo "::group::Deploy"
-          wrangler pages deploy dist --project-name=blog-frontend --branch=main 2>&1
-          echo "::endgroup::"
+        run: npx --yes wrangler pages deploy dist --project-name=blog-frontend --branch=main
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
